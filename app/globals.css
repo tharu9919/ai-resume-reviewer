@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #04040a;
+  --surface: #0c0c18;
+  --surface-2: #12121f;
+  --border: rgba(255, 255, 255, 0.07);
+  --purple: #7c3aed;
+  --blue: #2563eb;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #475569;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(124, 58, 237, 0.18), transparent 28rem),
+    radial-gradient(circle at 88% 18%, rgba(37, 99, 235, 0.12), transparent 30rem),
+    var(--background);
+  color: var(--text-primary);
+}
+
+button,
+textarea,
+input {
+  font: inherit;
+}
+
+::selection {
+  background: rgba(124, 58, 237, 0.45);
+  color: #fff;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #070711;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(#7c3aed, #2563eb);
+  border-radius: 999px;
+}
+
+.glass {
+  border: 1px solid var(--border);
+  background: rgba(12, 12, 24, 0.72);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(18px);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #c4b5fd, #60a5fa 45%, #34d399);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.animated-gradient-border {
+  position: relative;
+}
+
+.animated-gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(120deg, #7c3aed, #2563eb, #10b981, #7c3aed);
+  background-size: 300% 300%;
+  animation: gradient-shift 7s ease infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.78;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes scan-line {
+  0% {
+    transform: translateY(-120%);
+    opacity: 0;
+  }
+  20%,
+  75% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(120%);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
