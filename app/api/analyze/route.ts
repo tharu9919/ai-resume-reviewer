@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
+import { callAiProvider } from "@/lib/ai";
 import { buildAnalysisPrompt, analysisSystemInstruction } from "@/lib/buildPrompt";
-import { callGemini } from "@/lib/gemini";
 import { extractTextFromFile } from "@/lib/parseFile";
 import { rubric } from "@/lib/rubric";
 import type { AnalysisResult } from "@/lib/types";
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
     }
 
     const prompt = buildAnalysisPrompt(resumeText, jobDescription, rubric, weakVerbs);
-    const rawResponse = await callGemini(prompt, analysisSystemInstruction);
+    const rawResponse = await callAiProvider(prompt, analysisSystemInstruction);
     const jsonText = extractJsonText(rawResponse);
     const parsed: unknown = JSON.parse(jsonText);
 
@@ -100,8 +100,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "missing_api_key", message }, { status: 500 });
     }
 
-    if (message.toLowerCase().includes("quota")) {
+    if (message.includes("OpenRouter API key")) {
+      return NextResponse.json({ error: "missing_api_key", message }, { status: 500 });
+    }
+
+    if (message.toLowerCase().includes("quota") || message.toLowerCase().includes("credits") || message.toLowerCase().includes("rate limit")) {
       return NextResponse.json({ error: "quota_exceeded", message }, { status: 429 });
+    }
+
+    if (message.toLowerCase().includes("authentication")) {
+      return NextResponse.json({ error: "auth_failed", message }, { status: 401 });
     }
 
     if (message.includes("JSON")) {
