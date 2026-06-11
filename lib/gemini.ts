@@ -11,6 +11,11 @@ interface GeminiResponse {
   };
 }
 
+function isQuotaError(message: string): boolean {
+  const normalized = message.toLowerCase();
+  return normalized.includes("quota") || normalized.includes("rate limit") || normalized.includes("429");
+}
+
 export async function callGemini(prompt: string, systemInstruction: string): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY;
 
@@ -45,7 +50,11 @@ export async function callGemini(prompt: string, systemInstruction: string): Pro
       const data = (await response.json()) as GeminiResponse;
 
       if (!response.ok) {
-        throw new Error(data.error?.message ?? `Gemini request failed with status ${response.status}`);
+        const apiMessage = data.error?.message ?? `Gemini request failed with status ${response.status}`;
+        if (response.status === 429 || isQuotaError(apiMessage)) {
+          throw new Error("Gemini quota exceeded. Please wait a minute and try again, or add billing/upgrade quota in Google AI Studio.");
+        }
+        throw new Error(apiMessage);
       }
 
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -56,6 +65,9 @@ export async function callGemini(prompt: string, systemInstruction: string): Pro
       return text;
     } catch (error) {
       lastError = error instanceof Error ? error : new Error("Unknown Gemini request error.");
+      if (isQuotaError(lastError.message)) {
+        throw lastError;
+      }
       if (attempt < 2) {
         await sleep(800 * 2 ** attempt);
       }

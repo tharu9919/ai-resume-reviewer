@@ -100,6 +100,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "missing_api_key", message }, { status: 500 });
     }
 
+    if (message.toLowerCase().includes("quota")) {
+      return NextResponse.json({ error: "quota_exceeded", message }, { status: 429 });
+    }
+
     if (message.includes("JSON")) {
       return NextResponse.json(
         { error: "invalid_json", message: "The AI response could not be parsed. Please retry the analysis." },
